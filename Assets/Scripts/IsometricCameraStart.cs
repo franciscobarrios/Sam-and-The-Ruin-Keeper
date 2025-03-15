@@ -2,15 +2,14 @@ using UnityEngine;
 
 public class IsometricCameraStart : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private Transform player; // Assign the player in the Inspector
+    [SerializeField] private Vector3 offset = new Vector3(0, 0, 0); // Adjust for your game
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
+        if (player != null)
+        {
+            transform.position = player.position + offset;
+        }
     }
 }

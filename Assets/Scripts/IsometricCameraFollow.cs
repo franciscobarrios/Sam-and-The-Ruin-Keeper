@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class IsometricCameraFollow : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private Transform target; // The player
+    [SerializeField] private Vector3 offset = new Vector3(0, 0, 0); // Default isometric offset
+    [SerializeField] private float smoothSpeed = 5f; // Smooth follow speed
 
-    // Update is called once per frame
-    void Update()
+    private void LateUpdate()
     {
-        
+        if (target == null) return;
+
+        var desiredPosition = target.position + offset;
+        transform.position = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * smoothSpeed);
     }
 }

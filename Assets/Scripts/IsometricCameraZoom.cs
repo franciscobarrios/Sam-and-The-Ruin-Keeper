@@ -2,15 +2,17 @@ using UnityEngine;
 
 public class IsometricCameraZoom : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private new Camera camera;
+    [SerializeField] private float zoomSpeed = 2f;
+    [SerializeField] private float minZoom = 5f;
+    [SerializeField] private float maxZoom = 15f;
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        if (camera.orthographic)
+        {
+            var scrollInput = Input.GetAxis("Mouse ScrollWheel");
+            camera.orthographicSize = Mathf.Clamp(camera.orthographicSize - scrollInput * zoomSpeed, minZoom, maxZoom);
+        }
     }
 }
