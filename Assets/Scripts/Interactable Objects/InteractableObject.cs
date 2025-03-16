@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class InteractableObject : MonoBehaviour
 {
     private static readonly int IsBuilding = Animator.StringToHash("isBuilding");
-    [Serialize] private GameObject _buildingUI;
+    [Serialize] public GameObject buildingUI;
     [Serialize] private Slider _progressBar;
     [Serialize] private Animator _animator;
 
@@ -25,9 +25,9 @@ public class InteractableObject : MonoBehaviour
 
     public void ShowInteractPrompt(bool show)
     {
-        if (_buildingUI != null)
+        if (buildingUI != null)
         {
-            _buildingUI.SetActive(show);
+            buildingUI.SetActive(show);
         }
     }
 
