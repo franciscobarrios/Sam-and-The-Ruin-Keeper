@@ -1,20 +1,27 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InteractableObject : MonoBehaviour
 {
-    [Serialize] public GameObject buildingUI;
+    private static readonly int IsBuilding = Animator.StringToHash("isBuilding");
+    public GameObject buildingUI;
     public Slider progressBar;
+    public Animator animator;
     public float buildTime = 5f; // How long it takes to build
-    
-    //public Animator animator;
 
     private bool _isBuilding = false;
 
-    
+    // Required materials to build
+    public Dictionary<string, int> requiredMaterials = new Dictionary<string, int>
+    {
+        { "Wood", 5 },
+        { "Stone", 3 }
+    };
+
     public void ShowInteractPrompt(bool show)
     {
         if (buildingUI != null)
@@ -25,9 +32,16 @@ public class InteractableObject : MonoBehaviour
 
     public void Interact()
     {
-        if (!_isBuilding)
+        if (_isBuilding) return;
+
+            if (InventoryManager.Instance.HasMaterials(requiredMaterials))
         {
+            InventoryManager.Instance.UseMaterials(requiredMaterials);
             StartCoroutine(BuildProgress());
+        }
+        else
+        {
+            Debug.Log("Not enough materials!");
         }
     }
 
@@ -37,7 +51,7 @@ public class InteractableObject : MonoBehaviour
         progressBar.gameObject.SetActive(true);
         progressBar.value = 0;
 
-        //animator.SetTrigger("Build");
+        animator.SetBool(IsBuilding, true);
 
         float elapsedTime = 0;
 
