@@ -8,25 +8,26 @@ using UnityEngine.UI;
 public class InteractableObject : MonoBehaviour
 {
     private static readonly int IsBuilding = Animator.StringToHash("isBuilding");
-    public GameObject buildingUI;
-    public Slider progressBar;
-    public Animator animator;
+    [Serialize] private GameObject _buildingUI;
+    [Serialize] private Slider _progressBar;
+    [Serialize] private Animator _animator;
+
     public float buildTime = 5f; // How long it takes to build
 
     private bool _isBuilding = false;
 
     // Required materials to build
-    public Dictionary<string, int> requiredMaterials = new Dictionary<string, int>
+    private Dictionary<string, int> requiredMaterials = new Dictionary<string, int>
     {
-        { "Wood", 5 },
-        { "Stone", 3 }
+        { "Wood", 15 },
+        { "Stone", 13 }
     };
 
     public void ShowInteractPrompt(bool show)
     {
-        if (buildingUI != null)
+        if (_buildingUI != null)
         {
-            buildingUI.SetActive(show);
+            _buildingUI.SetActive(show);
         }
     }
 
@@ -34,7 +35,7 @@ public class InteractableObject : MonoBehaviour
     {
         if (_isBuilding) return;
 
-            if (InventoryManager.Instance.HasMaterials(requiredMaterials))
+        if (InventoryManager.Instance.HasMaterials(requiredMaterials))
         {
             InventoryManager.Instance.UseMaterials(requiredMaterials);
             StartCoroutine(BuildProgress());
@@ -48,22 +49,22 @@ public class InteractableObject : MonoBehaviour
     private IEnumerator BuildProgress()
     {
         _isBuilding = true;
-        progressBar.gameObject.SetActive(true);
-        progressBar.value = 0;
+        _progressBar.gameObject.SetActive(true);
+        _progressBar.value = 0;
 
-        animator.SetBool(IsBuilding, true);
+        _animator.SetBool(IsBuilding, true);
 
         float elapsedTime = 0;
 
         while (elapsedTime < buildTime)
         {
-            progressBar.value = elapsedTime / buildTime;
+            _progressBar.value = elapsedTime / buildTime;
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        progressBar.value = 1;
-        progressBar.gameObject.SetActive(false);
+        _progressBar.value = 1;
+        _progressBar.gameObject.SetActive(false);
         _isBuilding = false;
 
         Debug.Log("Building Complete!");

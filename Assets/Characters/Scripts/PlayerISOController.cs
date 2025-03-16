@@ -9,24 +9,27 @@ public class PlayerISOController : MonoBehaviour
     private static readonly int IsIdle = Animator.StringToHash("isIdle");
     private static readonly int IsFloating = Animator.StringToHash("isFloating");
 
-    [Header("Navigation Settings")] 
-    [SerializeField] private NavMeshAgent navMeshAgent;
+    [Header("Navigation Settings")] [SerializeField]
+    private NavMeshAgent navMeshAgent;
+
     [SerializeField] private LayerMask clickableLayer;
 
-    [Header("Interaction Settings")] 
-    [SerializeField] private LayerMask interactableLayer;
+    [Header("Interaction Settings")] [SerializeField]
+    private LayerMask interactableLayer;
+
     [SerializeField] private float detectionRange = 2f; // Adjust as needed
     [SerializeField] private float interactionRange = 2f;
 
-    [Header("Player Movement Settings")] 
-    [SerializeField] private float moveSpeed = 5f;
+    [Header("Player Movement Settings")] [SerializeField]
+    private float moveSpeed = 5f;
+
     [SerializeField] private float lookRotationSpeed = 5f;
 
     private GameInputSystemActions _inputActions;
     private Animator _animator;
     private Transform[] _portals;
     private InteractableObject _currentInteractable;
-    
+
     private bool _isMoving;
 
     private void Awake()
@@ -46,10 +49,6 @@ public class PlayerISOController : MonoBehaviour
             .ToArray();
     }
 
-    private void Start()
-    {
-    }
-
     private void Update()
     {
         if (navMeshAgent.remainingDistance > navMeshAgent.stoppingDistance)
@@ -62,13 +61,12 @@ public class PlayerISOController : MonoBehaviour
             _isMoving = false;
         }
 
-        
         CheckForInteractable();
         if (_currentInteractable != null && Keyboard.current.eKey.wasPressedThisFrame)
         {
             _currentInteractable.Interact();
         }
-        
+
         HandleAnimation();
     }
 
@@ -91,8 +89,7 @@ public class PlayerISOController : MonoBehaviour
                 Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * lookRotationSpeed);
         }
     }
-    
-    
+
     private void CheckForInteractable()
     {
         Collider[] nearbyObjects = Physics.OverlapSphere(transform.position, interactionRange, interactableLayer);
@@ -130,8 +127,7 @@ public class PlayerISOController : MonoBehaviour
             }
         }
 
-
-        bool isNearPortal = closestPortal != null && minDistance < detectionRange;
+        var isNearPortal = closestPortal != null && minDistance < detectionRange;
 
         if (isNearPortal)
         {
