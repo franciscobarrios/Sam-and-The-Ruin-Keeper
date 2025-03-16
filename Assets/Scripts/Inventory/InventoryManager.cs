@@ -18,6 +18,7 @@ public class InventoryManager : MonoBehaviour
             Destroy(gameObject);
 
         AddMaterial("Wood", 10);
+        AddMaterial("Stone", 15);
 
         UpdateMaterialUI(); // Ensure UI starts correctly
     }
