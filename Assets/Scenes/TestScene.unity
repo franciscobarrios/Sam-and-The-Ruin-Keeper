@@ -377,7 +377,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationSpeed: 200
-  rotationThreshold: 20
 --- !u!114 &330585551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -731,6 +730,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingUI: {fileID: 304838911}
+  progressBar: {fileID: 1641567504}
   buildTime: 5
 --- !u!65 &1027749207
 BoxCollider:

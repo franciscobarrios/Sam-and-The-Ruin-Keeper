@@ -9,7 +9,7 @@ public class InteractableObject : MonoBehaviour
 {
     private static readonly int IsBuilding = Animator.StringToHash("isBuilding");
     [Serialize] public GameObject buildingUI;
-    [Serialize] private Slider _progressBar;
+    [Serialize] public Slider progressBar;
     [Serialize] private Animator _animator;
 
     public float buildTime = 5f; // How long it takes to build
@@ -18,6 +18,11 @@ public class InteractableObject : MonoBehaviour
 
     // Required materials to build
     private readonly Dictionary<string, int> _requiredMaterials = new();
+
+    private void Start()
+    {
+        Debug.Log("progressBar: " + progressBar);
+    }
 
     public void ShowInteractPrompt(bool show)
     {
@@ -47,22 +52,23 @@ public class InteractableObject : MonoBehaviour
     private IEnumerator BuildProgress()
     {
         _isBuilding = true;
-        _progressBar.gameObject.SetActive(true);
-        _progressBar.value = 0;
+        progressBar.gameObject.SetActive(true);
+        progressBar.value = 0;
 
-        _animator.SetTrigger(IsBuilding);
+        //_animator.SetBool(IsBuilding, true);
 
         float elapsedTime = 0;
 
         while (elapsedTime < buildTime)
         {
-            _progressBar.value = elapsedTime / buildTime;
+            progressBar.value = elapsedTime / buildTime;
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        _progressBar.value = 1;
-        _progressBar.gameObject.SetActive(false);
+        progressBar.value = 1;
+        progressBar.gameObject.SetActive(false);
+        //_animator.SetBool(IsBuilding, false);
         _isBuilding = false;
 
         Debug.Log("Building Complete!");

@@ -92,42 +92,43 @@ public class PlayerISOController : MonoBehaviour
 
     private void CheckForInteractable()
     {
-        
         var nearbyObjects = Physics.OverlapSphere(transform.position, interactionRange, interactableLayer);
-
+        InteractableObject closestInteractable = null;
+        float closestDistance = Mathf.Infinity;
 
         if (nearbyObjects.Length > 0)
         {
-            Debug.Log("Objects detected: " + nearbyObjects.Length);
-
-
-            _currentInteractable = null; // Reset before searching
-
-
-            foreach (var obj in nearbyObjects)
+            for (int i = 0; i < nearbyObjects.Length; i++)
             {
-                _currentInteractable = obj.GetComponent<InteractableObject>();
-                if (_currentInteractable != null)
+                InteractableObject interactable = nearbyObjects[i].GetComponent<InteractableObject>();
+                if (interactable != null)
                 {
-                    Debug.Log("InteractableObject assigned: " + obj.name);
-                    
-                    _currentInteractable.ShowInteractPrompt(true);
-                    break; // Stop once we find one
+                    float distance = Vector3.Distance(transform.position, nearbyObjects[i].transform.position);
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closestInteractable = interactable;
+                    }
                 }
             }
 
-            if (_currentInteractable == null)
+            if (closestInteractable != null)
             {
-                Debug.LogWarning("No valid interactable found!");
-            }
+                if (_currentInteractable != null && _currentInteractable != closestInteractable)
+                {
+                    _currentInteractable.ShowInteractPrompt(false);
+                }
 
-
-            _currentInteractable = nearbyObjects[0].GetComponent<InteractableObject>();
-
-            if (_currentInteractable != null)
-            {
-                Debug.Log("ShowInteractPrompt");
+                _currentInteractable = closestInteractable;
                 _currentInteractable.ShowInteractPrompt(true);
+            }
+            else
+            {
+                if (_currentInteractable != null)
+                {
+                    _currentInteractable.ShowInteractPrompt(false);
+                    _currentInteractable = null;
+                }
             }
         }
         else
@@ -157,33 +158,9 @@ public class PlayerISOController : MonoBehaviour
 
         var isNearPortal = closestPortal != null && minDistance < detectionRange;
 
-        if (isNearPortal)
-        {
-            _animator.SetBool(IsFloating, true);
-            _animator.SetBool(IsWalking, false); // Stop walking animation
-            _animator.SetBool(IsIdle, false);
-        }
-        else
-        {
-            _animator.SetBool(IsFloating, false);
-        }
-
-        if (_isMoving && !isNearPortal)
-        {
-            _animator.SetBool(IsWalking, true);
-            _animator.SetBool(IsIdle, false);
-        }
-        else if (_isMoving && isNearPortal)
-        {
-            _animator.SetBool(IsFloating, true);
-            _animator.SetBool(IsWalking, false); // Stop walking animation
-            _animator.SetBool(IsIdle, false);
-        }
-        else
-        {
-            _animator.SetBool(IsWalking, false);
-            _animator.SetBool(IsIdle, true);
-        }
+        _animator.SetBool(IsFloating, isNearPortal);
+        _animator.SetBool(IsWalking, _isMoving && !isNearPortal);
+        _animator.SetBool(IsIdle, !_isMoving);
     }
 
     private void OnEnable()
