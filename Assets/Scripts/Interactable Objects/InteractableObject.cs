@@ -17,11 +17,7 @@ public class InteractableObject : MonoBehaviour
     private bool _isBuilding = false;
 
     // Required materials to build
-    private Dictionary<string, int> requiredMaterials = new Dictionary<string, int>
-    {
-        { "Wood", 15 },
-        { "Stone", 13 }
-    };
+    private readonly Dictionary<string, int> _requiredMaterials = new();
 
     public void ShowInteractPrompt(bool show)
     {
@@ -33,11 +29,13 @@ public class InteractableObject : MonoBehaviour
 
     public void Interact()
     {
+        Debug.Log("is building" + _isBuilding);
+
         if (_isBuilding) return;
 
-        if (InventoryManager.Instance.HasMaterials(requiredMaterials))
+        if (InventoryManager.Instance.HasMaterials(_requiredMaterials))
         {
-            InventoryManager.Instance.UseMaterials(requiredMaterials);
+            InventoryManager.Instance.UseMaterials(_requiredMaterials);
             StartCoroutine(BuildProgress());
         }
         else
@@ -52,7 +50,7 @@ public class InteractableObject : MonoBehaviour
         _progressBar.gameObject.SetActive(true);
         _progressBar.value = 0;
 
-        _animator.SetBool(IsBuilding, true);
+        _animator.SetTrigger(IsBuilding);
 
         float elapsedTime = 0;
 

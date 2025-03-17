@@ -72,8 +72,8 @@ public class PlayerISOController : MonoBehaviour
 
     private void OnClick(InputAction.CallbackContext ctx)
     {
-        RaycastHit hit;
-        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity, clickableLayer))
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out var hit, Mathf.Infinity,
+                clickableLayer))
         {
             navMeshAgent.SetDestination(hit.point);
         }
@@ -83,8 +83,8 @@ public class PlayerISOController : MonoBehaviour
     {
         if (navMeshAgent.velocity.sqrMagnitude > 0.1f)
         {
-            Vector3 direction = (navMeshAgent.steeringTarget - transform.position).normalized;
-            Quaternion targetRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            var direction = (navMeshAgent.steeringTarget - transform.position).normalized;
+            var targetRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
             transform.rotation =
                 Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * lookRotationSpeed);
         }
@@ -92,13 +92,41 @@ public class PlayerISOController : MonoBehaviour
 
     private void CheckForInteractable()
     {
-        Collider[] nearbyObjects = Physics.OverlapSphere(transform.position, interactionRange, interactableLayer);
+        
+        var nearbyObjects = Physics.OverlapSphere(transform.position, interactionRange, interactableLayer);
+
 
         if (nearbyObjects.Length > 0)
         {
+            Debug.Log("Objects detected: " + nearbyObjects.Length);
+
+
+            _currentInteractable = null; // Reset before searching
+
+
+            foreach (var obj in nearbyObjects)
+            {
+                _currentInteractable = obj.GetComponent<InteractableObject>();
+                if (_currentInteractable != null)
+                {
+                    Debug.Log("InteractableObject assigned: " + obj.name);
+                    
+                    _currentInteractable.ShowInteractPrompt(true);
+                    break; // Stop once we find one
+                }
+            }
+
+            if (_currentInteractable == null)
+            {
+                Debug.LogWarning("No valid interactable found!");
+            }
+
+
             _currentInteractable = nearbyObjects[0].GetComponent<InteractableObject>();
+
             if (_currentInteractable != null)
             {
+                Debug.Log("ShowInteractPrompt");
                 _currentInteractable.ShowInteractPrompt(true);
             }
         }

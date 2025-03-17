@@ -8,7 +8,7 @@ public class InventoryManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI materialText;
 
-    private Dictionary<string, int> _materials = new Dictionary<string, int>();
+    private Dictionary<string, int> _materials = new();
 
     private void Awake()
     {
@@ -25,6 +25,9 @@ public class InventoryManager : MonoBehaviour
 
     public void AddMaterial(string material, int amount)
     {
+        
+        Debug.Log("AddMaterial " + material);
+        
         if (_materials.ContainsKey(material))
             _materials[material] += amount;
         else
@@ -35,6 +38,9 @@ public class InventoryManager : MonoBehaviour
 
     public bool HasMaterials(Dictionary<string, int> requiredMaterials)
     {
+        
+        Debug.Log("HasMaterials ");
+        
         foreach (var item in requiredMaterials)
         {
             if (!_materials.ContainsKey(item.Key) || _materials[item.Key] < item.Value)
@@ -46,6 +52,9 @@ public class InventoryManager : MonoBehaviour
 
     public void UseMaterials(Dictionary<string, int> requiredMaterials)
     {
+        
+        Debug.Log("UseMaterials ");
+        
         foreach (var item in requiredMaterials)
         {
             if (_materials.ContainsKey(item.Key))
@@ -66,6 +75,9 @@ public class InventoryManager : MonoBehaviour
         materialText.text = "Materials:\n";
         foreach (var item in _materials)
         {
+            
+            Debug.Log(item.Key + " : " + item.Value);
+            
             materialText.text += $"{item.Key}: {item.Value}\n";
         }
     }
