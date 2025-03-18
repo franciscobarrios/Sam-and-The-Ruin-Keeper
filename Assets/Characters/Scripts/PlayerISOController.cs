@@ -9,22 +9,19 @@ public class PlayerISOController : MonoBehaviour
     private static readonly int IsWalking = Animator.StringToHash("isWalking");
     private static readonly int IsIdle = Animator.StringToHash("isIdle");
     private static readonly int IsFloating = Animator.StringToHash("isFloating");
-    private static readonly int IsBuilding = Animator.StringToHash("isBuilding");
+    private static readonly int IsHammering = Animator.StringToHash("isHammering");
 
-    [Header("Navigation Settings")] [SerializeField]
-    private NavMeshAgent navMeshAgent;
-
+    [Header("Navigation Settings")] 
+    [SerializeField] private NavMeshAgent navMeshAgent;
     [SerializeField] private LayerMask clickableLayer;
 
-    [Header("Interaction Settings")] [SerializeField]
-    private LayerMask interactableLayer;
-
+    [Header("Interaction Settings")] 
+    [SerializeField] private LayerMask interactableLayer;
     [SerializeField] private float detectionRange = 2f; // Adjust as needed
     [SerializeField] private float interactionRange = 2f;
 
-    [Header("Player Movement Settings")] [SerializeField]
-    private float moveSpeed = 5f;
-
+    [Header("Player Movement Settings")] 
+    [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float lookRotationSpeed = 5f;
 
     private GameInputSystemActions _inputActions;
@@ -175,11 +172,11 @@ public class PlayerISOController : MonoBehaviour
 
     private IEnumerator PlayBuildAnimationRoutine(float duration)
     {
-        _animator.SetBool(IsBuilding, true);
+        _animator.SetBool(IsHammering, true);
         yield return new WaitForSeconds(duration);
-        _animator.SetBool(IsBuilding, false);
+        _animator.SetBool(IsHammering, false);
     }
-    
+
     public void DisableMovement()
     {
         navMeshAgent.isStopped = true;

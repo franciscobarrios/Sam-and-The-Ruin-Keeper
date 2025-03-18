@@ -8,7 +8,6 @@ using UnityEngine.UI;
 
 public class InteractableObject : MonoBehaviour
 {
-    private static readonly int IsBuilding = Animator.StringToHash("isBuilding");
     [Serialize] public GameObject buildingUI;
     [Serialize] public Slider progressBar;
     [Serialize] private Animator _animator;
