@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ public class InteractableObject : MonoBehaviour
 
     public float buildTime = 5f; // How long it takes to build
 
+    private PlayerISOController _playerController;
     private bool _isBuilding = false;
 
     // Required materials to build
@@ -21,7 +23,7 @@ public class InteractableObject : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("progressBar: " + progressBar);
+        _playerController = FindObjectOfType<PlayerISOController>();
     }
 
     public void ShowInteractPrompt(bool show)
@@ -57,6 +59,16 @@ public class InteractableObject : MonoBehaviour
 
         //_animator.SetBool(IsBuilding, true);
 
+        if (_playerController != null)
+        {
+            _playerController.DisableMovement();
+            _playerController.PlayBuildAnimation(buildTime);
+
+            yield return _playerController.StartCoroutine(
+                _playerController.SmoothLookAt(transform.position, 0.5f)
+            );
+        }
+
         float elapsedTime = 0;
 
         while (elapsedTime < buildTime)
@@ -71,6 +83,9 @@ public class InteractableObject : MonoBehaviour
         //_animator.SetBool(IsBuilding, false);
         _isBuilding = false;
 
-        Debug.Log("Building Complete!");
+        if (_playerController != null)
+        {
+            _playerController.EnableMovement();
+        }
     }
 }

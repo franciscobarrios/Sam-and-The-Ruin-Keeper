@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,6 +9,7 @@ public class PlayerISOController : MonoBehaviour
     private static readonly int IsWalking = Animator.StringToHash("isWalking");
     private static readonly int IsIdle = Animator.StringToHash("isIdle");
     private static readonly int IsFloating = Animator.StringToHash("isFloating");
+    private static readonly int IsBuilding = Animator.StringToHash("isBuilding");
 
     [Header("Navigation Settings")] [SerializeField]
     private NavMeshAgent navMeshAgent;
@@ -31,6 +33,7 @@ public class PlayerISOController : MonoBehaviour
     private InteractableObject _currentInteractable;
 
     private bool _isMoving;
+    private bool _isBuilding = false;
 
     private void Awake()
     {
@@ -65,7 +68,9 @@ public class PlayerISOController : MonoBehaviour
         if (_currentInteractable != null && Keyboard.current.eKey.wasPressedThisFrame)
         {
             _currentInteractable.Interact();
+            _isBuilding = true;
         }
+        else _isBuilding = false;
 
         HandleAnimation();
     }
@@ -159,8 +164,51 @@ public class PlayerISOController : MonoBehaviour
         var isNearPortal = closestPortal != null && minDistance < detectionRange;
 
         _animator.SetBool(IsFloating, isNearPortal);
-        _animator.SetBool(IsWalking, _isMoving && !isNearPortal);
-        _animator.SetBool(IsIdle, !_isMoving);
+        _animator.SetBool(IsWalking, _isMoving && !isNearPortal && !_isBuilding);
+        _animator.SetBool(IsIdle, !_isMoving && !_isBuilding);
+    }
+
+    public void PlayBuildAnimation(float buildDuration)
+    {
+        StartCoroutine(PlayBuildAnimationRoutine(buildDuration));
+    }
+
+    private IEnumerator PlayBuildAnimationRoutine(float duration)
+    {
+        _animator.SetBool(IsBuilding, true);
+        yield return new WaitForSeconds(duration);
+        _animator.SetBool(IsBuilding, false);
+    }
+
+    public IEnumerator SmoothLookAt(Vector3 targetPosition, float duration)
+    {
+        
+        Debug.Log("SmoothLookAt called");
+        
+        var direction = (targetPosition - transform.position).normalized;
+        direction.y = 0f;
+        var startRotation = transform.rotation;
+        var targetRotation = Quaternion.LookRotation(direction);
+
+        var elapsed = 0f;
+        while (elapsed < duration)
+        {
+            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.rotation = targetRotation; // make sure to end exactly on target
+    }
+
+    public void DisableMovement()
+    {
+        navMeshAgent.isStopped = true;
+    }
+
+    public void EnableMovement()
+    {
+        navMeshAgent.isStopped = false;
     }
 
     private void OnEnable()
