@@ -179,28 +179,7 @@ public class PlayerISOController : MonoBehaviour
         yield return new WaitForSeconds(duration);
         _animator.SetBool(IsBuilding, false);
     }
-
-    public IEnumerator SmoothLookAt(Vector3 targetPosition, float duration)
-    {
-        
-        Debug.Log("SmoothLookAt called");
-        
-        var direction = (targetPosition - transform.position).normalized;
-        direction.y = 0f;
-        var startRotation = transform.rotation;
-        var targetRotation = Quaternion.LookRotation(direction);
-
-        var elapsed = 0f;
-        while (elapsed < duration)
-        {
-            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, elapsed / duration);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        transform.rotation = targetRotation; // make sure to end exactly on target
-    }
-
+    
     public void DisableMovement()
     {
         navMeshAgent.isStopped = true;

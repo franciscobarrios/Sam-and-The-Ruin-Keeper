@@ -36,8 +36,6 @@ public class InteractableObject : MonoBehaviour
 
     public void Interact()
     {
-        Debug.Log("is building" + _isBuilding);
-
         if (_isBuilding) return;
 
         if (InventoryManager.Instance.HasMaterials(_requiredMaterials))
@@ -63,10 +61,6 @@ public class InteractableObject : MonoBehaviour
         {
             _playerController.DisableMovement();
             _playerController.PlayBuildAnimation(buildTime);
-
-            yield return _playerController.StartCoroutine(
-                _playerController.SmoothLookAt(transform.position, 0.5f)
-            );
         }
 
         float elapsedTime = 0;
