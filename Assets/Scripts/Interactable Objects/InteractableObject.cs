@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
+using Characters.Scripts;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,20 +10,21 @@ public class InteractableObject : MonoBehaviour
 {
     [Serialize] public GameObject buildingUI;
     [Serialize] public Slider progressBar;
-    [Serialize] private Animator _animator;
+    [Serialize] public Animator animator;
 
-    public float buildTime = 5f; // How long it takes to build
+    public PlayerState actionState = PlayerState.Hammering; //default state
 
-    private PlayerISOController _playerController;
-    private bool _isBuilding = false;
+    public float hammeringTime = 5f; // How long it takes to build
+    public float gatherTime = 2f; // Example gather time
+    public float mineTime = 3f; // Example mine time
+
+    private bool _isPerformingAction = false;
 
     // Required materials to build
     private readonly Dictionary<string, int> _requiredMaterials = new();
 
-    private void Start()
-    {
-        _playerController = FindObjectOfType<PlayerISOController>();
-    }
+    // Callback to trigger player animation
+    private Action<float, PlayerState> _playPlayerAnimationCallback;
 
     public void ShowInteractPrompt(bool show)
     {
@@ -33,52 +34,71 @@ public class InteractableObject : MonoBehaviour
         }
     }
 
-    public void Interact()
+    // Modified Interact method
+    public void Interact(Action<float, PlayerState> playAnimationCallback)
     {
-        if (_isBuilding) return;
+        if (_isPerformingAction) return;
 
-        if (InventoryManager.Instance.HasMaterials(_requiredMaterials))
+        _playPlayerAnimationCallback = playAnimationCallback; // Store the callback
+
+        if (actionState == PlayerState.Hammering)
         {
-            InventoryManager.Instance.UseMaterials(_requiredMaterials);
-            StartCoroutine(BuildProgress());
+            if (InventoryManager.Instance.HasMaterials(_requiredMaterials))
+            {
+                InventoryManager.Instance.UseMaterials(_requiredMaterials);
+                StartCoroutine(BuildProgress());
+            }
+            else
+            {
+                Debug.Log("Not enough materials!");
+            }
         }
-        else
+        else if (actionState == PlayerState.Gathering)
         {
-            Debug.Log("Not enough materials!");
+            StartCoroutine(Gather());
+        }
+        else if (actionState == PlayerState.Mining)
+        {
+            StartCoroutine(Mine());
         }
     }
 
     private IEnumerator BuildProgress()
     {
-        _isBuilding = true;
+        _isPerformingAction = true;
         progressBar.gameObject.SetActive(true);
         progressBar.value = 0;
 
-        //_animator.SetBool(IsBuilding, true);
-
-        if (_playerController != null)
-        {
-            _playerController.DisableMovement();
-            _playerController.PlayBuildAnimation(buildTime);
-        }
+        // Trigger player's animation using the callback
+        _playPlayerAnimationCallback?.Invoke(hammeringTime, actionState);
 
         float elapsedTime = 0;
 
-        while (elapsedTime < buildTime)
+        while (elapsedTime < hammeringTime)
         {
-            progressBar.value = elapsedTime / buildTime;
+            progressBar.value = elapsedTime / hammeringTime;
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         progressBar.value = 1;
         progressBar.gameObject.SetActive(false);
-        //_animator.SetBool(IsBuilding, false);
-        _isBuilding = false;
+        _isPerformingAction = false;
+    }
 
-        if (_playerController != null)
-        {
-            _playerController.EnableMovement();
-        }
+    private IEnumerator Gather()
+    {
+        _isPerformingAction = true;
+        _playPlayerAnimationCallback?.Invoke(gatherTime, actionState);
+        yield return new WaitForSeconds(gatherTime);
+        _isPerformingAction = false;
+    }
+
+    private IEnumerator Mine()
+    {
+        _isPerformingAction = true;
+        _playPlayerAnimationCallback?.Invoke(mineTime, actionState);
+        yield return new WaitForSeconds(mineTime);
+        _isPerformingAction = false;
     }
 }
