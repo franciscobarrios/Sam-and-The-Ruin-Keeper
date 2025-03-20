@@ -7,7 +7,6 @@ namespace Characters.Scripts
     public class BuildingState : CharacterState
     {
         private Coroutine _buildingCoroutine;
-        
         private readonly Dictionary<string, int> _requiredMaterials = new();
 
         public BuildingState(InteractingState interactingState) : base(interactingState.StateMachine)

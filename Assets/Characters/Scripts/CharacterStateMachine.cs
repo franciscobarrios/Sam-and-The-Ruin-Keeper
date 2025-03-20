@@ -7,7 +7,6 @@ namespace Characters.Scripts
     {
         // States
         public CharacterState CurrentState { get; private set; }
-
         public IdleState IdleState { get; private set; }
         public WalkingState WalkingState { get; private set; }
         public FloatingState FloatingState { get; private set; }

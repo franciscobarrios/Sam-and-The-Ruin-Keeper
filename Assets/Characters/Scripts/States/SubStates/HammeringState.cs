@@ -5,22 +5,18 @@ namespace Characters.Scripts
 {
     public class HammeringState : CharacterState
     {
-        InteractingState interactingState;
+        private InteractingState _interactingState;
         private Coroutine _hammeringCoroutine;
 
         public HammeringState(InteractingState interactingState) : base(interactingState.StateMachine)
         {
-            this.interactingState = interactingState;
+            _interactingState = interactingState;
         }
 
         public override void EnterState()
         {
             StateMachine.SetAnimationState("Hammering");
             _hammeringCoroutine = StateMachine.StartCoroutine(HammeringCoroutine());
-        }
-
-        public override void UpdateState()
-        {
         }
 
         public override void ExitState()
@@ -31,7 +27,7 @@ namespace Characters.Scripts
             }
         }
 
-        IEnumerator HammeringCoroutine()
+        private IEnumerator HammeringCoroutine()
         {
             yield return new WaitForSeconds(5f); // Example: Wait for 5 second
             if (StateMachine.IsMoving())

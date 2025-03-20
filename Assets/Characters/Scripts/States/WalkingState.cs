@@ -16,6 +16,11 @@ namespace Characters.Scripts
             {
                 StateMachine.SwitchState(StateMachine.IdleState);
             }
+            else
+            {
+                InteractableObject interactable = StateMachine.CheckForInteractable();
+                StateMachine._playerISOController.SetCurrentInteractable(interactable);
+            }
         }
 
         public override void ExitState()

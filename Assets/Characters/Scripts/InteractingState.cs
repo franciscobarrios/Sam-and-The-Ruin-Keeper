@@ -1,9 +1,13 @@
+using System;
+using System.Collections.Generic;
+using Interactable_Objects;
 using UnityEngine;
 
 namespace Characters.Scripts
 {
     public class InteractingState : CharacterState
     {
+        private readonly Dictionary<string, int> _requiredMaterials = new();
         public CharacterState CurrentSubState;
         public HammeringState HammeringState;
         public BuildingState BuildingState;
@@ -17,7 +21,30 @@ namespace Characters.Scripts
 
         public void Interact(InteractableObject interactable)
         {
-            Debug.Log("InteractingState" + interactable.name);
+            switch (interactable.GetObjectType())
+            {
+                case ObjectType.Building:
+                {
+                    CurrentSubState = BuildingState;
+                    InventoryManager.Instance.HasMaterials(_requiredMaterials);
+                    Debug.Log("CurrentSubState: " + CurrentSubState.GetType().Name);
+                    break;
+                }
+                case ObjectType.Resource:
+                {
+                    CurrentSubState = HammeringState;
+                    Debug.Log("CurrentSubState: " + CurrentSubState);
+                    break;
+                }
+                case ObjectType.Crafting:
+                {
+                    CurrentSubState = HammeringState;
+                    Debug.Log("CurrentSubState: " + CurrentSubState);
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public override void EnterState() => CurrentSubState.EnterState();
