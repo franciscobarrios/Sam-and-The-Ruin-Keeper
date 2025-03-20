@@ -4,43 +4,28 @@ namespace Characters.Scripts
 {
     public class InteractingState : CharacterState
     {
-        // Sub-states within Interacting
         public CharacterState CurrentSubState;
         public HammeringState HammeringState;
-        // ... other sub-states ...
+        public BuildingState BuildingState;
 
         public InteractingState(CharacterStateMachine stateMachine) : base(stateMachine)
         {
             HammeringState = new HammeringState(this);
-            // ... initialize other sub-states ...
-            CurrentSubState = HammeringState; // Default sub-state
+            BuildingState = new BuildingState(this);
+            CurrentSubState = HammeringState;
         }
 
         public void Interact(InteractableObject interactable)
         {
+            Debug.Log("InteractingState" + interactable.name);
         }
 
-        public override void EnterState()
-        {
-            // Enter the current sub-state
-            CurrentSubState.EnterState();
-            Debug.Log("Entered Interacting State");
-        }
+        public override void EnterState() => CurrentSubState.EnterState();
 
-        public override void UpdateState()
-        {
-            // Update the current sub-state
-            CurrentSubState.UpdateState();
-        }
+        public override void UpdateState() => CurrentSubState.UpdateState();
 
-        public override void ExitState()
-        {
-            // Exit the current sub-state
-            CurrentSubState.ExitState();
-            // Any cleanup code for Interacting state
-        }
+        public override void ExitState() => CurrentSubState.ExitState();
 
-        // Method to switch between sub-states
         public void SwitchSubState(CharacterState newSubState)
         {
             CurrentSubState.ExitState();

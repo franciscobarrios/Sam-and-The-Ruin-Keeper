@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Characters.Scripts;
+using Interactable_Objects;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +12,7 @@ public class InteractableObject : MonoBehaviour
     [Serialize] public GameObject buildingUI;
     [Serialize] public Slider progressBar;
     [Serialize] public Animator animator;
+    [Serialize] public ObjectType objectType;
 
     public PlayerState actionState = PlayerState.Hammering; //default state
 
@@ -34,7 +36,6 @@ public class InteractableObject : MonoBehaviour
         }
     }
 
-    // Modified Interact method
     public void Interact(Action<float, PlayerState> playAnimationCallback)
     {
         if (_isPerformingAction) return;
@@ -69,11 +70,7 @@ public class InteractableObject : MonoBehaviour
         progressBar.gameObject.SetActive(true);
         progressBar.value = 0;
 
-        // Trigger player's animation using the callback
-        _playPlayerAnimationCallback?.Invoke(hammeringTime, actionState);
-
         float elapsedTime = 0;
-
         while (elapsedTime < hammeringTime)
         {
             progressBar.value = elapsedTime / hammeringTime;

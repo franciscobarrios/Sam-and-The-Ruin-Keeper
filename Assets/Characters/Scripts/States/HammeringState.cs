@@ -6,6 +6,7 @@ namespace Characters.Scripts
     public class HammeringState : CharacterState
     {
         InteractingState interactingState;
+        private Coroutine _hammeringCoroutine;
 
         public HammeringState(InteractingState interactingState) : base(interactingState.StateMachine)
         {
@@ -14,28 +15,25 @@ namespace Characters.Scripts
 
         public override void EnterState()
         {
-            // Set animation to Hammering
             StateMachine.SetAnimationState("Hammering");
-            Debug.Log("Entered Hammering State");
-            // Start hammering logic (e.g., coroutine)
-            StateMachine.StartCoroutine(HammeringCoroutine());
+            _hammeringCoroutine = StateMachine.StartCoroutine(HammeringCoroutine());
         }
 
         public override void UpdateState()
         {
-            // Check for end of hammering (e.g., in the coroutine)
         }
 
         public override void ExitState()
         {
-            // Stop hammering logic
+            if (_hammeringCoroutine != null)
+            {
+                StateMachine.StopCoroutine(_hammeringCoroutine);
+            }
         }
 
         IEnumerator HammeringCoroutine()
         {
-            yield return new WaitForSeconds(1f); // Example: Wait for 1 second
-            // Finish hammering
-            // Transition back to Idle or Walking based on movement
+            yield return new WaitForSeconds(5f); // Example: Wait for 5 second
             if (StateMachine.IsMoving())
             {
                 StateMachine.SwitchState(StateMachine.WalkingState);

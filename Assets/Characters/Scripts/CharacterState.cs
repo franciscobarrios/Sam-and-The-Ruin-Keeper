@@ -1,6 +1,6 @@
 namespace Characters.Scripts
 {
-    public abstract class CharacterState
+    public abstract class CharacterState: IState
     {
         public CharacterStateMachine StateMachine;
 
@@ -11,14 +11,18 @@ namespace Characters.Scripts
 
         public virtual void EnterState()
         {
-        } // Called when entering the state
+        }
 
         public virtual void UpdateState()
         {
-        } // Called every frame while in the state
+        }
+
+        public virtual void UpdateFixedState()
+        {
+        }
 
         public virtual void ExitState()
         {
-        } // Called when exiting the state
+        }
     }
 }

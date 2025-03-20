@@ -9,8 +9,9 @@ namespace Characters.Scripts
         Hammering,  // 4
         Gathering,  // 5
         Mining,     // 6
-        Attacking,  // 7
-        Hunting,    // 8
-        Hiding,     // 9
+        Building,   // 7
+        Attacking,  // 8
+        Hunting,    // 9
+        Hiding,     // 10
     }
 }

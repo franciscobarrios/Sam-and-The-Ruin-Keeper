@@ -7,19 +7,19 @@ namespace Characters.Scripts
     {
         // States
         public CharacterState CurrentState { get; private set; }
+
         public IdleState IdleState { get; private set; }
         public WalkingState WalkingState { get; private set; }
-        public InteractingState InteractingState { get; private set; }
         public FloatingState FloatingState { get; private set; }
+        public InteractingState InteractingState { get; private set; }
 
-        // Components and Variables
-        // Example:
         [SerializeField] private Animator animator;
         [SerializeField] private LayerMask interactableLayer;
-        [SerializeField] private float velocity; // Example: Character's velocity
         [SerializeField] private float interactionRange = 1f;
         [SerializeField] private float portalMinDistance = 2f;
-        
+        [SerializeField] public float walkingSpeedThreshold = 0.1f;
+        [SerializeField] public float idleSpeedThreshold = 0.05f;
+
         private NavMeshAgent _navMeshAgent;
         public PlayerISOController _playerISOController;
 
@@ -41,29 +41,22 @@ namespace Characters.Scripts
 
         private void Update()
         {
-            // Handle input, movement, etc.
-            // Example:
-            velocity = Input.GetAxis("Vertical"); // Example: Get vertical input
-
-            // Update the current state
             CurrentState.UpdateState();
+
+            if (_navMeshAgent.velocity.magnitude > walkingSpeedThreshold)
+            {
+                var movementDirection = _navMeshAgent.velocity.normalized;
+                var targetRotation = Quaternion.LookRotation(movementDirection);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+            }
         }
 
-        // Method called by PlayerISOController to move
         public void MoveTo(Vector3 destination)
         {
             _navMeshAgent.SetDestination(destination);
-            SwitchState(WalkingState); // Transition to WalkingState
+            SwitchState(WalkingState);
         }
 
-        // Method called by PlayerISOController to interact
-        public void Interact(InteractableObject interactable)
-        {
-            SwitchState(InteractingState); // Transition to InteractingState
-            InteractingState.Interact(interactable); // Delegate to InteractingState
-        }
-
-        // Method to switch states
         public void SwitchState(CharacterState newState)
         {
             CurrentState.ExitState();
@@ -71,23 +64,23 @@ namespace Characters.Scripts
             CurrentState.EnterState();
         }
 
-        // Helper methods for state logic
-        public bool IsMoving()
+        public void SetAnimationState(string state) => animator.CrossFade(state, 0.15f);
+
+        public float GetMovementSpeed() => _navMeshAgent.velocity.magnitude;
+
+        public bool IsMoving() => GetMovementSpeed() > walkingSpeedThreshold;
+
+        public void Interact(InteractableObject interactable)
         {
-            return velocity > 0.1f; // Example: Check if character is moving
+            SwitchState(InteractingState);
+            InteractingState.Interact(interactable);
         }
 
-        public bool IsInteracting()
-        {
-            return Input.GetKeyDown(KeyCode.E) && IsCloseToInteractable(); // Example: Check for interaction input
-        }
+        public bool IsInteracting() => Input.GetKeyDown(KeyCode.E) && IsCloseToInteractable();
 
         public bool IsNearPortal()
         {
             var portals = _playerISOController.portals;
-            
-            Debug.Log(portals.Length);
-
             foreach (var portal in portals)
             {
                 var distance = Vector3.Distance(transform.position, portal.transform.position);
@@ -96,19 +89,11 @@ namespace Characters.Scripts
                     return true;
                 }
             }
-            return false; // Example: Check if character is close to a portal
+
+            return false;
         }
 
-        public void SetAnimationState(string state)
-        {
-            // Set the animation in the Animator
-            animator.Play(state); // Example: Using Animator.Play
-        }
-
-        public bool IsCloseToInteractable()
-        {
-            return CheckForInteractable() != null;
-        }
+        public bool IsCloseToInteractable() => CheckForInteractable() != null;
 
         public InteractableObject CheckForInteractable()
         {

@@ -7,9 +7,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerISOController : MonoBehaviour
 {
-    [Header("Navigation Settings")] [SerializeField]
-    private NavMeshAgent navMeshAgent;
-
+    //[Header("Navigation Settings")] 
+    [SerializeField] private NavMeshAgent navMeshAgent;
     [SerializeField] private LayerMask clickableLayer;
 
     private GameInputSystemActions _inputActions;
@@ -72,66 +71,3 @@ public class PlayerISOController : MonoBehaviour
         _inputActions.Player.Disable();
     }
 }
-
-/*private void FaceTarget()
-  {
-      if (navMeshAgent.velocity.sqrMagnitude > 0.1f)
-      {
-          var direction = (navMeshAgent.steeringTarget - transform.position).normalized;
-          var targetRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-          transform.rotation =
-              Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * lookRotationSpeed);
-      }
-  }
-  */
-
-/*public void CheckForInteractable()
-  {
-      var nearbyObjects = Physics.OverlapSphere(transform.position, interactionRange, interactableLayer);
-      InteractableObject closestInteractable = null;
-      var closestDistance = Mathf.Infinity;
-
-      if (nearbyObjects.Length > 0)
-      {
-          for (var i = 0; i < nearbyObjects.Length; i++)
-          {
-              InteractableObject interactable = nearbyObjects[i].GetComponent<InteractableObject>();
-              if (interactable != null)
-              {
-                  var distance = Vector3.Distance(transform.position, nearbyObjects[i].transform.position);
-                  if (distance < closestDistance)
-                  {
-                      closestDistance = distance;
-                      closestInteractable = interactable;
-                  }
-              }
-          }
-
-          if (closestInteractable != null)
-          {
-              if (_currentInteractable != null && _currentInteractable != closestInteractable)
-              {
-                  _currentInteractable.ShowInteractPrompt(false);
-              }
-
-              _currentInteractable = closestInteractable;
-              _currentInteractable.ShowInteractPrompt(true);
-          }
-          else
-          {
-              if (_currentInteractable != null)
-              {
-                  _currentInteractable.ShowInteractPrompt(false);
-                  _currentInteractable = null;
-              }
-          }
-      }
-      else
-      {
-          if (_currentInteractable != null)
-          {
-              _currentInteractable.ShowInteractPrompt(false);
-              _currentInteractable = null;
-          }
-      }
-  }*/
