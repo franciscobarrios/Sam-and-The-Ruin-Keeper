@@ -8,9 +8,9 @@ namespace Characters.Scripts
         private Coroutine _gatheringCoroutine;
         private InteractingState _interactingState;
 
-        public GatheringState(InteractingState InteractingState) : base(InteractingState.StateMachine)
+        public GatheringState(InteractingState interactingState) : base(interactingState.StateMachine)
         {
-            _interactingState = InteractingState;
+            _interactingState = interactingState;
         }
 
         public override void EnterState()

@@ -12,14 +12,17 @@ namespace Characters.Scripts
 
         public override void UpdateState()
         {
-            if (StateMachine.GetMovementSpeed() < StateMachine.idleSpeedThreshold)
+            if (!StateMachine.IsMoving())
             {
                 StateMachine.SwitchState(StateMachine.IdleState);
             }
-            else
+            else if (StateMachine.IsNearPortal())
             {
-                InteractableObject interactable = StateMachine.CheckForInteractable();
-                StateMachine._playerISOController.SetCurrentInteractable(interactable);
+                StateMachine.SwitchState(StateMachine.FloatingState);
+            }
+            else if (StateMachine.IsInteracting())
+            {
+                StateMachine.TriggerFloatingState();
             }
         }
 

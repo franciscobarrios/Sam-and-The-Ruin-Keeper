@@ -5,14 +5,16 @@ namespace Characters.Scripts
 {
     public class CharacterStateMachine : MonoBehaviour
     {
-        // States
+        // State references
         public CharacterState CurrentState { get; private set; }
         public IdleState IdleState { get; private set; }
         public WalkingState WalkingState { get; private set; }
         public FloatingState FloatingState { get; private set; }
         public InteractingState InteractingState { get; private set; }
 
-        [SerializeField] private Animator animator;
+        [Header("Setup References")] [SerializeField]
+        private Animator animator;
+
         [SerializeField] private LayerMask interactableLayer;
         [SerializeField] private float interactionRange = 1f;
         [SerializeField] private float portalMinDistance = 2f;
@@ -25,15 +27,15 @@ namespace Characters.Scripts
         private void Awake()
         {
             _navMeshAgent = GetComponent<NavMeshAgent>();
-            _playerISOController = GetComponent<PlayerISOController>(); // Get the PlayerISOController
+            _playerISOController = GetComponent<PlayerISOController>();
 
             // Initialize states
             IdleState = new IdleState(this);
             WalkingState = new WalkingState(this);
-            InteractingState = new InteractingState(this);
             FloatingState = new FloatingState(this);
+            InteractingState = new InteractingState(this);
 
-            // Set initial state
+            // Start in IdleState
             CurrentState = IdleState;
             CurrentState.EnterState();
         }
@@ -42,20 +44,16 @@ namespace Characters.Scripts
         {
             CurrentState.UpdateState();
 
+            // Smoothly rotate towards movement direction if moving
             if (_navMeshAgent.velocity.magnitude > walkingSpeedThreshold)
             {
-                var movementDirection = _navMeshAgent.velocity.normalized;
-                var targetRotation = Quaternion.LookRotation(movementDirection);
+                Vector3 movementDirection = _navMeshAgent.velocity.normalized;
+                Quaternion targetRotation = Quaternion.LookRotation(movementDirection);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
             }
         }
 
-        public void MoveTo(Vector3 destination)
-        {
-            _navMeshAgent.SetDestination(destination);
-            SwitchState(WalkingState);
-        }
-
+        // Public state-switching method
         public void SwitchState(CharacterState newState)
         {
             CurrentState.ExitState();
@@ -63,26 +61,21 @@ namespace Characters.Scripts
             CurrentState.EnterState();
         }
 
-        public void SetAnimationState(string state) => animator.CrossFade(state, 0.15f);
+        // Animation helper method
+        public void SetAnimationState(string stateName) => animator.CrossFade(stateName, 0.15f);
 
+        // Utility methods
         public float GetMovementSpeed() => _navMeshAgent.velocity.magnitude;
 
         public bool IsMoving() => GetMovementSpeed() > walkingSpeedThreshold;
-
-        public void Interact(InteractableObject interactable)
-        {
-            SwitchState(InteractingState);
-            InteractingState.Interact(interactable);
-        }
 
         public bool IsInteracting() => Input.GetKeyDown(KeyCode.E) && IsCloseToInteractable();
 
         public bool IsNearPortal()
         {
-            var portals = _playerISOController.portals;
-            foreach (var portal in portals)
+            foreach (var portal in _playerISOController.portals)
             {
-                var distance = Vector3.Distance(transform.position, portal.transform.position);
+                float distance = Vector3.Distance(transform.position, portal.transform.position);
                 if (distance < portalMinDistance)
                 {
                     return true;
@@ -98,26 +91,52 @@ namespace Characters.Scripts
         {
             var nearbyObjects = Physics.OverlapSphere(transform.position, interactionRange, interactableLayer);
             InteractableObject closestInteractable = null;
-            var closestDistance = Mathf.Infinity;
+            float closestDistance = Mathf.Infinity;
 
-            if (nearbyObjects.Length > 0)
+            foreach (var obj in nearbyObjects)
             {
-                foreach (var t in nearbyObjects)
+                var interactable = obj.GetComponent<InteractableObject>();
+                if (interactable != null)
                 {
-                    var interactable = t.GetComponent<InteractableObject>();
-                    if (interactable != null)
+                    float distance = Vector3.Distance(transform.position, obj.transform.position);
+                    if (distance < closestDistance)
                     {
-                        var distance = Vector3.Distance(transform.position, t.transform.position);
-                        if (distance < closestDistance)
-                        {
-                            closestDistance = distance;
-                            closestInteractable = interactable;
-                        }
+                        closestDistance = distance;
+                        closestInteractable = interactable;
                     }
                 }
             }
 
             return closestInteractable;
+        }
+
+        // Optional: Visualize ranges in Scene view
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position, interactionRange);
+
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(transform.position, portalMinDistance);
+        }
+
+        // Expose destination movement
+        public void MoveTo(Vector3 destination)
+        {
+            _navMeshAgent.SetDestination(destination);
+            SwitchState(WalkingState);
+        }
+
+        // Start interacting
+        public void Interact(InteractableObject interactable)
+        {
+            SwitchState(InteractingState);
+            InteractingState.Interact(interactable);
+        }
+        
+        public void TriggerFloatingState()
+        {
+            SwitchState(FloatingState);
         }
     }
 }

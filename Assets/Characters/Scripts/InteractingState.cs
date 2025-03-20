@@ -8,15 +8,17 @@ namespace Characters.Scripts
     public class InteractingState : CharacterState
     {
         private readonly Dictionary<string, int> _requiredMaterials = new();
-        public CharacterState CurrentSubState;
-        public HammeringState HammeringState;
-        public BuildingState BuildingState;
+        private CharacterState _currentSubState;
+        private BuildingState _buildingState;
+        private GatheringState _gatheringState;
+        private CraftingState _craftingState;
 
         public InteractingState(CharacterStateMachine stateMachine) : base(stateMachine)
         {
-            HammeringState = new HammeringState(this);
-            BuildingState = new BuildingState(this);
-            CurrentSubState = HammeringState;
+            _buildingState = new BuildingState(this);
+            _gatheringState = new GatheringState(this);
+            _craftingState = new CraftingState(this);
+            _currentSubState = _buildingState;
         }
 
         public void Interact(InteractableObject interactable)
@@ -25,21 +27,24 @@ namespace Characters.Scripts
             {
                 case ObjectType.Building:
                 {
-                    CurrentSubState = BuildingState;
+                    _currentSubState = _buildingState;
+                    SwitchSubState(_currentSubState);
                     InventoryManager.Instance.HasMaterials(_requiredMaterials);
-                    Debug.Log("CurrentSubState: " + CurrentSubState.GetType().Name);
+                    Debug.Log("CurrentSubState: " + _currentSubState.GetType().Name);
                     break;
                 }
                 case ObjectType.Resource:
                 {
-                    CurrentSubState = HammeringState;
-                    Debug.Log("CurrentSubState: " + CurrentSubState);
+                    _currentSubState = _gatheringState;
+                    SwitchSubState(_currentSubState);
+                    Debug.Log("CurrentSubState: " + _currentSubState.GetType().Name);
                     break;
                 }
                 case ObjectType.Crafting:
                 {
-                    CurrentSubState = HammeringState;
-                    Debug.Log("CurrentSubState: " + CurrentSubState);
+                    _currentSubState = _craftingState;
+                    SwitchSubState(_currentSubState);
+                    Debug.Log("CurrentSubState: " + _currentSubState.GetType().Name);
                     break;
                 }
                 default:
@@ -47,17 +52,17 @@ namespace Characters.Scripts
             }
         }
 
-        public override void EnterState() => CurrentSubState.EnterState();
+        public override void EnterState() => _currentSubState.EnterState();
 
-        public override void UpdateState() => CurrentSubState.UpdateState();
+        public override void UpdateState() => _currentSubState.UpdateState();
 
-        public override void ExitState() => CurrentSubState.ExitState();
+        public override void ExitState() => _currentSubState.ExitState();
 
-        public void SwitchSubState(CharacterState newSubState)
+        private void SwitchSubState(CharacterState newSubState)
         {
-            CurrentSubState.ExitState();
-            CurrentSubState = newSubState;
-            CurrentSubState.EnterState();
+            _currentSubState.ExitState();
+            _currentSubState = newSubState;
+            _currentSubState.EnterState();
         }
     }
 }

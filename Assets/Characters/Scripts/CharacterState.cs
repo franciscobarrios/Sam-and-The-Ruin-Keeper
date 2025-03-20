@@ -6,7 +6,7 @@ namespace Characters.Scripts
 
         public CharacterState(CharacterStateMachine stateMachine)
         {
-            this.StateMachine = stateMachine;
+            StateMachine = stateMachine;
         }
 
         public virtual void EnterState()

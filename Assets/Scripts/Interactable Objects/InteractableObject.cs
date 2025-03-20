@@ -9,8 +9,7 @@ using UnityEngine.UI;
 
 public class InteractableObject : MonoBehaviour
 {
-    public float hammeringTime = 10f; // How long it takes to build
-
+    [Serialize] public float animationTime = 10f;
     [Serialize] public GameObject glowingRing;
     [Serialize] public Slider progressBar;
     [Serialize] public ObjectType objectType;
@@ -54,9 +53,9 @@ public class InteractableObject : MonoBehaviour
         progressBar.value = 0;
 
         float elapsedTime = 0;
-        while (elapsedTime < hammeringTime)
+        while (elapsedTime < animationTime)
         {
-            progressBar.value = elapsedTime / hammeringTime;
+            progressBar.value = elapsedTime / animationTime;
             elapsedTime += Time.deltaTime;
             yield return null;
         }

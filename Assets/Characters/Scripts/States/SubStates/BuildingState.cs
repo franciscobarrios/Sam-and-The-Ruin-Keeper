@@ -7,16 +7,18 @@ namespace Characters.Scripts
     public class BuildingState : CharacterState
     {
         private Coroutine _buildingCoroutine;
+        private InteractingState _interactingState;
         private readonly Dictionary<string, int> _requiredMaterials = new();
 
         public BuildingState(InteractingState interactingState) : base(interactingState.StateMachine)
         {
+            _interactingState = interactingState;
         }
 
         public override void EnterState()
         {
-            StateMachine.SetAnimationState("Building");
-            _buildingCoroutine =StateMachine.StartCoroutine(BuildingCoroutine());
+            StateMachine.SetAnimationState("Hammering");
+            _buildingCoroutine = StateMachine.StartCoroutine(BuildingCoroutine());
         }
 
         public override void ExitState()

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Characters.Scripts
@@ -7,6 +8,7 @@ namespace Characters.Scripts
     {
         private Coroutine _craftingCoroutine;
         private InteractingState _interactingState;
+        private readonly Dictionary<string, int> _requiredMaterials = new();
 
         public CraftingState(InteractingState interactingState) : base(interactingState.StateMachine)
         {
@@ -30,14 +32,16 @@ namespace Characters.Scripts
         private IEnumerator CraftingCoroutine()
         {
             yield return new WaitForSeconds(5f); // Example: Wait for 5 second
-            if (StateMachine.IsMoving())
+            if (InventoryManager.Instance.HasMaterials(_requiredMaterials))
             {
-                StateMachine.SwitchState(StateMachine.WalkingState);
+                Debug.Log($"Building materials for {_requiredMaterials.Count} materials");
             }
             else
             {
-                StateMachine.SwitchState(StateMachine.IdleState);
+                Debug.Log("Not enough materials materials");
             }
+
+            StateMachine.SwitchState(StateMachine.IdleState);
         }
     }
 }
