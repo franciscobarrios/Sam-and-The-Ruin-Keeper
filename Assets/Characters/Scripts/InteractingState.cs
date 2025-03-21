@@ -9,9 +9,9 @@ namespace Characters.Scripts
     {
         private readonly Dictionary<string, int> _requiredMaterials = new();
         private CharacterState _currentSubState;
-        private BuildingState _buildingState;
-        private GatheringState _gatheringState;
-        private CraftingState _craftingState;
+        private readonly BuildingState _buildingState;
+        private readonly GatheringState _gatheringState;
+        private readonly CraftingState _craftingState;
 
         public InteractingState(CharacterStateMachine stateMachine) : base(stateMachine)
         {
@@ -27,28 +27,27 @@ namespace Characters.Scripts
             {
                 case ObjectType.Building:
                 {
-                    _currentSubState = _buildingState;
-                    SwitchSubState(_currentSubState);
+                    SwitchSubState(_buildingState);
+                    _buildingState.SetInteractable(interactable);
                     InventoryManager.Instance.HasMaterials(_requiredMaterials);
                     Debug.Log("CurrentSubState: " + _currentSubState.GetType().Name);
                     break;
                 }
                 case ObjectType.Resource:
                 {
-                    _currentSubState = _gatheringState;
-                    SwitchSubState(_currentSubState);
+                    SwitchSubState(_gatheringState);
                     Debug.Log("CurrentSubState: " + _currentSubState.GetType().Name);
                     break;
                 }
                 case ObjectType.Crafting:
                 {
-                    _currentSubState = _craftingState;
-                    SwitchSubState(_currentSubState);
+                    SwitchSubState(_craftingState);
                     Debug.Log("CurrentSubState: " + _currentSubState.GetType().Name);
                     break;
                 }
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    Debug.LogWarning("Unknown interactable type");
+                    break;
             }
         }
 
@@ -63,6 +62,11 @@ namespace Characters.Scripts
             _currentSubState.ExitState();
             _currentSubState = newSubState;
             _currentSubState.EnterState();
+        }
+
+        public void OnSubStateCompleted()
+        {
+            StateMachine.SwitchState(StateMachine.IdleState);
         }
     }
 }

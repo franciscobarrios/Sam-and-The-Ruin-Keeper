@@ -46,7 +46,7 @@ public class InteractableObject : MonoBehaviour
         }
     }
 
-    private IEnumerator BuildProgress()
+    public IEnumerator BuildProgress()
     {
         _isPerformingAction = true;
         progressBar.gameObject.SetActive(true);

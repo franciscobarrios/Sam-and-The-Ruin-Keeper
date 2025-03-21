@@ -7,18 +7,38 @@ namespace Characters.Scripts
     public class BuildingState : CharacterState
     {
         private Coroutine _buildingCoroutine;
-        private InteractingState _interactingState;
+        private InteractableObject _interactable;
+        private readonly InteractingState _parentState;
         private readonly Dictionary<string, int> _requiredMaterials = new();
 
-        public BuildingState(InteractingState interactingState) : base(interactingState.StateMachine)
+        public BuildingState(InteractingState parent) : base(parent.StateMachine)
         {
-            _interactingState = interactingState;
+            _parentState = parent;
+        }
+
+        public void SetInteractable(InteractableObject interactable)
+        {
+            _interactable = interactable;
         }
 
         public override void EnterState()
         {
+            
             StateMachine.SetAnimationState("Hammering");
             _buildingCoroutine = StateMachine.StartCoroutine(BuildingCoroutine());
+            StateMachine.StartCoroutine(_interactable.BuildProgress());
+            
+            if (_interactable != null)
+            {
+                StateMachine.SetAnimationState("Hammering");
+                _buildingCoroutine = StateMachine.StartCoroutine(BuildingCoroutine());
+                StateMachine.StartCoroutine(_interactable.BuildProgress());
+            }
+            else
+            {
+                Debug.LogWarning("No interactable assigned to BuildingState");
+                StateMachine.SwitchState(StateMachine.IdleState);
+            }
         }
 
         public override void ExitState()
