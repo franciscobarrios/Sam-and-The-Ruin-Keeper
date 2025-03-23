@@ -1,6 +1,6 @@
 namespace Characters.Scripts
 {
-    public abstract class CharacterState: IState
+    public abstract class CharacterState : IState
     {
         public CharacterStateMachine StateMachine;
 

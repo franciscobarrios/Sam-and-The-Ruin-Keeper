@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Characters.Scripts
@@ -6,17 +8,26 @@ namespace Characters.Scripts
     public class GatheringState : CharacterState
     {
         private Coroutine _gatheringCoroutine;
-        private InteractingState _interactingState;
+        private InteractableObject _interactable;
+        private readonly InteractingState _parentState;
 
-        public GatheringState(InteractingState interactingState) : base(interactingState.StateMachine)
+        public GatheringState(InteractingState parent) : base(parent.StateMachine)
         {
-            _interactingState = interactingState;
+            _parentState = parent;
+        }
+
+        public void SetInteractable(InteractableObject interactable)
+        {
+            _interactable = interactable;
         }
 
         public override void EnterState()
         {
-            StateMachine.SetAnimationState("Gathering");
-            _gatheringCoroutine = StateMachine.StartCoroutine(GatheringCoroutine());
+            if (_interactable != null)
+            {
+                StateMachine.SetAnimationState("Gathering");
+                _gatheringCoroutine = StateMachine.StartCoroutine(GatheringCoroutine());
+            }
         }
 
         public override void ExitState()
@@ -30,14 +41,8 @@ namespace Characters.Scripts
         private IEnumerator GatheringCoroutine()
         {
             yield return new WaitForSeconds(5f); // Example: Wait for 5 second
-            if (StateMachine.IsMoving())
-            {
-                StateMachine.SwitchState(StateMachine.WalkingState);
-            }
-            else
-            {
-                StateMachine.SwitchState(StateMachine.IdleState);
-            }
+            InventoryManager.Instance.AddMaterial("Wood", 2);
+            _parentState.OnSubStateCompleted();
         }
     }
 }

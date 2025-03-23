@@ -7,24 +7,30 @@ using UnityEngine.InputSystem;
 
 public class PlayerISOController : MonoBehaviour
 {
-    //[Header("Navigation Settings")] 
-    [SerializeField] private NavMeshAgent navMeshAgent;
+    [Header("Navigation Settings")] [SerializeField]
+    private NavMeshAgent navMeshAgent;
+
     [SerializeField] private LayerMask clickableLayer;
 
     private GameInputSystemActions _inputActions;
     private CharacterStateMachine _stateMachine; // Reference to the state machine
     public Transform[] portals;
+    public Transform[] interactables;
     private InteractableObject _currentInteractable;
 
     private void Awake()
     {
-        _stateMachine = GetComponent<CharacterStateMachine>(); // Get the state machine component
+        _stateMachine = GetComponent<CharacterStateMachine>();
 
         _inputActions = new GameInputSystemActions();
         _inputActions.Player.Move.performed += OnClick;
-        _inputActions.Player.Interact.performed += OnInteract; // Use the Input System event
+        _inputActions.Player.Interact.performed += OnInteract;
 
-        portals = GameObject.FindGameObjectsWithTag("Portal") // Find all portals in the scene
+        portals = GameObject.FindGameObjectsWithTag("Portal")
+            .Select(p => p.transform)
+            .ToArray();
+
+        interactables = GameObject.FindGameObjectsWithTag("Interactable")
             .Select(p => p.transform)
             .ToArray();
     }
@@ -45,25 +51,7 @@ public class PlayerISOController : MonoBehaviour
 
     private void OnInteract(InputAction.CallbackContext ctx)
     {
-        if (_currentInteractable != null)
-        {
-            _stateMachine.Interact(_currentInteractable); // Tell the State Machine to interact
-        }
-    }
-
-    // This method is now called by the State Machine
-    public void SetCurrentInteractable(InteractableObject interactable)
-    {
-        if (_currentInteractable != null && _currentInteractable != interactable)
-        {
-            _currentInteractable.ShowInteractPrompt(false);
-        }
-
-        _currentInteractable = interactable;
-        if (_currentInteractable != null)
-        {
-            _currentInteractable.ShowInteractPrompt(true);
-        }
+        _stateMachine.Interact();
     }
 
     private void OnDisable()

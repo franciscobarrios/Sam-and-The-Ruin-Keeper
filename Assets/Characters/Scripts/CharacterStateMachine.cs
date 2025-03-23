@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -5,7 +6,6 @@ namespace Characters.Scripts
 {
     public class CharacterStateMachine : MonoBehaviour
     {
-        // State references
         public CharacterState CurrentState { get; private set; }
         public IdleState IdleState { get; private set; }
         public WalkingState WalkingState { get; private set; }
@@ -19,23 +19,22 @@ namespace Characters.Scripts
         [SerializeField] private float interactionRange = 1f;
         [SerializeField] private float portalMinDistance = 2f;
         [SerializeField] public float walkingSpeedThreshold = 0.1f;
-        [SerializeField] public float idleSpeedThreshold = 0.05f;
 
         private NavMeshAgent _navMeshAgent;
         public PlayerISOController _playerISOController;
+
+        private InteractableObject _currentInteractable;
 
         private void Awake()
         {
             _navMeshAgent = GetComponent<NavMeshAgent>();
             _playerISOController = GetComponent<PlayerISOController>();
 
-            // Initialize states
             IdleState = new IdleState(this);
             WalkingState = new WalkingState(this);
             FloatingState = new FloatingState(this);
             InteractingState = new InteractingState(this);
 
-            // Start in IdleState
             CurrentState = IdleState;
             CurrentState.EnterState();
         }
@@ -44,7 +43,6 @@ namespace Characters.Scripts
         {
             CurrentState.UpdateState();
 
-            // Smoothly rotate towards movement direction if moving
             if (_navMeshAgent.velocity.magnitude > walkingSpeedThreshold)
             {
                 Vector3 movementDirection = _navMeshAgent.velocity.normalized;
@@ -53,7 +51,6 @@ namespace Characters.Scripts
             }
         }
 
-        // Public state-switching method
         public void SwitchState(CharacterState newState)
         {
             CurrentState.ExitState();
@@ -61,22 +58,62 @@ namespace Characters.Scripts
             CurrentState.EnterState();
         }
 
-        // Animation helper method
         public void SetAnimationState(string stateName) => animator.CrossFade(stateName, 0.15f);
 
-        // Utility methods
-        public float GetMovementSpeed() => _navMeshAgent.velocity.magnitude;
+        private float GetMovementSpeed() => _navMeshAgent.velocity.magnitude;
 
         public bool IsMoving() => GetMovementSpeed() > walkingSpeedThreshold;
 
-        public bool IsInteracting() => Input.GetKeyDown(KeyCode.E) && IsCloseToInteractable();
+        public bool IsInteracting() => Input.GetKeyDown(KeyCode.E) && IsNearInteractable();
 
-        public bool IsNearPortal()
+        private InteractableObject GetCurrentInteractable()
         {
-            foreach (var portal in _playerISOController.portals)
+            foreach (var obj in _playerISOController.interactables)
             {
-                float distance = Vector3.Distance(transform.position, portal.transform.position);
-                if (distance < portalMinDistance)
+                var interactable = obj.GetComponent<InteractableObject>();
+                if (interactable != null)
+                {
+                    var distance = Vector3.Distance(transform.position, obj.transform.position);
+                    if (distance < Mathf.Infinity)
+                    {
+                        _currentInteractable = interactable;
+                    }
+                }
+            }
+
+            return _currentInteractable;
+        }
+
+        public void MoveTo(Vector3 destination)
+        {
+            _navMeshAgent.SetDestination(destination);
+            SwitchState(WalkingState);
+        }
+
+        public void Interact()
+        {
+            if (IsNearInteractable())
+            {
+                InteractingState.Interact(GetCurrentInteractable());
+                SwitchState(InteractingState);
+            }
+        }
+
+        public void SetCurrentInteractable(InteractableObject interactable)
+        {
+            _currentInteractable = interactable;
+        }
+
+        public bool IsNearInteractable() => IsNearToObject(_playerISOController.interactables, interactionRange);
+
+        public bool IsNearPortal() => IsNearToObject(_playerISOController.portals, portalMinDistance);
+
+        private bool IsNearToObject(Transform[] targets, float interactionDistance)
+        {
+            foreach (var target in targets)
+            {
+                var distance = Vector3.Distance(transform.position, target.transform.position);
+                if (distance < interactionDistance)
                 {
                     return true;
                 }
@@ -85,32 +122,13 @@ namespace Characters.Scripts
             return false;
         }
 
-        public bool IsCloseToInteractable() => CheckForInteractable() != null;
+        public void TriggerFloatingState() => SwitchState(FloatingState);
 
-        public InteractableObject CheckForInteractable()
+        public void TriggerGlowingAnimation(bool trigger)
         {
-            var nearbyObjects = Physics.OverlapSphere(transform.position, interactionRange, interactableLayer);
-            InteractableObject closestInteractable = null;
-            float closestDistance = Mathf.Infinity;
-
-            foreach (var obj in nearbyObjects)
-            {
-                var interactable = obj.GetComponent<InteractableObject>();
-                if (interactable != null)
-                {
-                    float distance = Vector3.Distance(transform.position, obj.transform.position);
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestInteractable = interactable;
-                    }
-                }
-            }
-
-            return closestInteractable;
+            GetCurrentInteractable().ShowGlowingRing(trigger);
         }
 
-        // Optional: Visualize ranges in Scene view
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.green;
@@ -118,25 +136,6 @@ namespace Characters.Scripts
 
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireSphere(transform.position, portalMinDistance);
-        }
-
-        // Expose destination movement
-        public void MoveTo(Vector3 destination)
-        {
-            _navMeshAgent.SetDestination(destination);
-            SwitchState(WalkingState);
-        }
-
-        // Start interacting
-        public void Interact(InteractableObject interactable)
-        {
-            SwitchState(InteractingState);
-            InteractingState.Interact(interactable);
-        }
-        
-        public void TriggerFloatingState()
-        {
-            SwitchState(FloatingState);
         }
     }
 }

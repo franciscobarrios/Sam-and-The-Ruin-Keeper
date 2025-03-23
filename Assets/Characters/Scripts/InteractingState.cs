@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Characters.Scripts;
 using Interactable_Objects;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ namespace Characters.Scripts
         private readonly BuildingState _buildingState;
         private readonly GatheringState _gatheringState;
         private readonly CraftingState _craftingState;
+        private InteractableObject _interactable; // Add this
 
         public InteractingState(CharacterStateMachine stateMachine) : base(stateMachine)
         {
@@ -23,26 +25,26 @@ namespace Characters.Scripts
 
         public void Interact(InteractableObject interactable)
         {
+            _interactable = interactable;
+
             switch (interactable.GetObjectType())
             {
                 case ObjectType.Building:
                 {
-                    SwitchSubState(_buildingState);
                     _buildingState.SetInteractable(interactable);
-                    InventoryManager.Instance.HasMaterials(_requiredMaterials);
-                    Debug.Log("CurrentSubState: " + _currentSubState.GetType().Name);
+                    SwitchSubState(_buildingState);
                     break;
                 }
                 case ObjectType.Resource:
                 {
+                    _gatheringState.SetInteractable(interactable);
                     SwitchSubState(_gatheringState);
-                    Debug.Log("CurrentSubState: " + _currentSubState.GetType().Name);
                     break;
                 }
                 case ObjectType.Crafting:
                 {
+                    _craftingState.SetInteractable(interactable);
                     SwitchSubState(_craftingState);
-                    Debug.Log("CurrentSubState: " + _currentSubState.GetType().Name);
                     break;
                 }
                 default:
@@ -64,9 +66,6 @@ namespace Characters.Scripts
             _currentSubState.EnterState();
         }
 
-        public void OnSubStateCompleted()
-        {
-            StateMachine.SwitchState(StateMachine.IdleState);
-        }
+        public void OnSubStateCompleted() => StateMachine.SwitchState(StateMachine.IdleState);
     }
 }

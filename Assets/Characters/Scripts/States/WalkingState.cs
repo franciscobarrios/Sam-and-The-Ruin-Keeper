@@ -12,18 +12,10 @@ namespace Characters.Scripts
 
         public override void UpdateState()
         {
-            if (!StateMachine.IsMoving())
-            {
-                StateMachine.SwitchState(StateMachine.IdleState);
-            }
-            else if (StateMachine.IsNearPortal())
-            {
-                StateMachine.SwitchState(StateMachine.FloatingState);
-            }
-            else if (StateMachine.IsInteracting())
-            {
-                StateMachine.TriggerFloatingState();
-            }
+            if (!StateMachine.IsMoving()) StateMachine.SwitchState(StateMachine.IdleState);
+            else if (StateMachine.IsNearPortal()) StateMachine.SwitchState(StateMachine.FloatingState);
+            else if (StateMachine.IsInteracting()) StateMachine.SwitchState(StateMachine.InteractingState);
+            else if (StateMachine.IsNearInteractable()) StateMachine.TriggerGlowingAnimation(true); else StateMachine.TriggerGlowingAnimation(false);
         }
 
         public override void ExitState()

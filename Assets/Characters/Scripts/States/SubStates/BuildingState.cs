@@ -23,11 +23,6 @@ namespace Characters.Scripts
 
         public override void EnterState()
         {
-            
-            StateMachine.SetAnimationState("Hammering");
-            _buildingCoroutine = StateMachine.StartCoroutine(BuildingCoroutine());
-            StateMachine.StartCoroutine(_interactable.BuildProgress());
-            
             if (_interactable != null)
             {
                 StateMachine.SetAnimationState("Hammering");
@@ -37,7 +32,7 @@ namespace Characters.Scripts
             else
             {
                 Debug.LogWarning("No interactable assigned to BuildingState");
-                StateMachine.SwitchState(StateMachine.IdleState);
+                _parentState.OnSubStateCompleted(); // Use parent's method to switch
             }
         }
 
@@ -61,7 +56,7 @@ namespace Characters.Scripts
                 Debug.Log("Not enough materials materials");
             }
 
-            StateMachine.SwitchState(StateMachine.IdleState);
+            _parentState.OnSubStateCompleted();
         }
     }
 }

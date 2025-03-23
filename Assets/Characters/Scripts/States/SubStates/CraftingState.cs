@@ -7,18 +7,27 @@ namespace Characters.Scripts
     public class CraftingState : CharacterState
     {
         private Coroutine _craftingCoroutine;
-        private InteractingState _interactingState;
+        private InteractableObject _interactable;
+        private readonly InteractingState _parentState;
         private readonly Dictionary<string, int> _requiredMaterials = new();
 
-        public CraftingState(InteractingState interactingState) : base(interactingState.StateMachine)
+        public CraftingState(InteractingState parent) : base(parent.StateMachine)
         {
-            _interactingState = interactingState;
+            _parentState = parent;
+        }
+
+        public void SetInteractable(InteractableObject interactable)
+        {
+            _interactable = interactable;
         }
 
         public override void EnterState()
         {
-            StateMachine.SetAnimationState("Gathering");
-            _craftingCoroutine = StateMachine.StartCoroutine(CraftingCoroutine());
+            if (_interactable != null)
+            {
+                StateMachine.SetAnimationState("Gathering");
+                _craftingCoroutine = StateMachine.StartCoroutine(CraftingCoroutine());
+            }
         }
 
         public override void ExitState()
