@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Characters.Scripts;
 using Interactable_Objects;
 using UnityEngine;
@@ -8,12 +7,10 @@ namespace Characters.Scripts
 {
     public class InteractingState : CharacterState
     {
-        private readonly Dictionary<string, int> _requiredMaterials = new();
         private CharacterState _currentSubState;
         private readonly BuildingState _buildingState;
         private readonly GatheringState _gatheringState;
         private readonly CraftingState _craftingState;
-        private InteractableObject _interactable; // Add this
 
         public InteractingState(CharacterStateMachine stateMachine) : base(stateMachine)
         {
@@ -25,8 +22,6 @@ namespace Characters.Scripts
 
         public void Interact(InteractableObject interactable)
         {
-            _interactable = interactable;
-
             switch (interactable.GetObjectType())
             {
                 case ObjectType.Building:

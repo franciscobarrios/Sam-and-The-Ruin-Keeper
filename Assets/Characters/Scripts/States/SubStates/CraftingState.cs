@@ -27,6 +27,7 @@ namespace Characters.Scripts
             {
                 StateMachine.SetAnimationState("Gathering");
                 _craftingCoroutine = StateMachine.StartCoroutine(CraftingCoroutine());
+                StateMachine.StartCoroutine(_interactable.BuildProgress());
             }
         }
 
@@ -50,7 +51,7 @@ namespace Characters.Scripts
                 Debug.Log("Not enough materials materials");
             }
 
-            StateMachine.SwitchState(StateMachine.IdleState);
+            _parentState.OnSubStateCompleted();
         }
     }
 }

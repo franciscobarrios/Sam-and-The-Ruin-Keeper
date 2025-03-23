@@ -124,10 +124,7 @@ namespace Characters.Scripts
 
         public void TriggerFloatingState() => SwitchState(FloatingState);
 
-        public void TriggerGlowingAnimation(bool trigger)
-        {
-            GetCurrentInteractable().ShowGlowingRing(trigger);
-        }
+        public void TriggerGlowingAnimation(bool trigger) => GetCurrentInteractable().ShowGlowingRing(trigger);
 
         private void OnDrawGizmosSelected()
         {
