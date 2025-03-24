@@ -13,9 +13,13 @@ namespace Characters.Scripts
         public override void UpdateState()
         {
             if (StateMachine.IsMoving()) StateMachine.SwitchState(StateMachine.WalkingState);
-            else if (StateMachine.IsNearPortal()) StateMachine.TriggerFloatingState();
             else if (StateMachine.IsInteracting()) StateMachine.SwitchState(StateMachine.InteractingState);
-            else if (StateMachine.IsNearInteractable()) StateMachine.TriggerGlowingAnimation(true); else StateMachine.TriggerGlowingAnimation(false);
+            else if (StateMachine.IsNearPortal()) StateMachine.SwitchState(StateMachine.FloatingState);
+            else
+            {
+                InteractableObject interactable = StateMachine.CheckForInteractable();
+                StateMachine._playerISOController.SetCurrentInteractable(interactable);
+            }
         }
 
         public override void ExitState()

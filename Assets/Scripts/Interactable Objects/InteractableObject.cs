@@ -13,12 +13,11 @@ public class InteractableObject : MonoBehaviour
     [Serialize] public GameObject glowingRing;
     [Serialize] public Slider progressBar;
     [Serialize] public ObjectType objectType;
-
     private bool _isPerformingAction = false;
     private readonly Dictionary<string, int> _requiredMaterials = new();
     private Action<float, PlayerState> _playPlayerAnimationCallback;
 
-    public void ShowGlowingRing(bool show)
+    public void ShowInteractPrompt(bool show)
     {
         if (glowingRing != null)
         {
@@ -28,8 +27,13 @@ public class InteractableObject : MonoBehaviour
 
     public ObjectType GetObjectType() => objectType;
 
-    public void Interact()
+    public void Interact(Action<float, PlayerState> playAnimationCallback)
     {
+        if (_isPerformingAction) return;
+
+        _playPlayerAnimationCallback = playAnimationCallback;
+        // Store the callback
+
         if (InventoryManager.Instance.HasMaterials(_requiredMaterials))
         {
             InventoryManager.Instance.UseMaterials(_requiredMaterials);

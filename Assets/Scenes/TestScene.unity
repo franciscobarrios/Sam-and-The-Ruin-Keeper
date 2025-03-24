@@ -1046,9 +1046,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gathering Object
       objectReference: {fileID: 0}
+    - target: {fileID: 1485815307748559432, guid: 27183ed61fd694c04830db3c2fdecf88, type: 3}
+      propertyPath: m_TagString
+      value: Interactable
+      objectReference: {fileID: 0}
     - target: {fileID: 5002214739531077840, guid: 27183ed61fd694c04830db3c2fdecf88, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -13.22
+      value: -4.42
       objectReference: {fileID: 0}
     - target: {fileID: 5002214739531077840, guid: 27183ed61fd694c04830db3c2fdecf88, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1759,7 +1763,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 986021855301348220, guid: 0984a004b35ea4b72a17010d0817d9b3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -5.71
       objectReference: {fileID: 0}
     - target: {fileID: 986021855301348220, guid: 0984a004b35ea4b72a17010d0817d9b3, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1767,7 +1771,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 986021855301348220, guid: 0984a004b35ea4b72a17010d0817d9b3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.53
+      value: -3.62
       objectReference: {fileID: 0}
     - target: {fileID: 986021855301348220, guid: 0984a004b35ea4b72a17010d0817d9b3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1848,13 +1852,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: Building Object
       objectReference: {fileID: 0}
+    - target: {fileID: 1485815307748559432, guid: 27183ed61fd694c04830db3c2fdecf88, type: 3}
+      propertyPath: m_TagString
+      value: Interactable
+      objectReference: {fileID: 0}
     - target: {fileID: 3971918911950840975, guid: 27183ed61fd694c04830db3c2fdecf88, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5002214739531077840, guid: 27183ed61fd694c04830db3c2fdecf88, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.4282228
+      value: 2.76
       objectReference: {fileID: 0}
     - target: {fileID: 5002214739531077840, guid: 27183ed61fd694c04830db3c2fdecf88, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1908,6 +1916,6 @@ SceneRoots:
   - {fileID: 1934666215}
   - {fileID: 288481401}
   - {fileID: 41613568}
-  - {fileID: 3702048237706280951}
   - {fileID: 1372400040}
+  - {fileID: 3702048237706280951}
   - {fileID: 1035771053}

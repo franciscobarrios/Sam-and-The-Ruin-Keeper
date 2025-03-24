@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Portal
   - Tool
+  - Interactable
   layers:
   - Default
   - TransparentFX

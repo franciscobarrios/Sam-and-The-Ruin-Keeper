@@ -27,15 +27,13 @@ namespace Characters.Scripts
             {
                 StateMachine.SetAnimationState("Gathering");
                 _gatheringCoroutine = StateMachine.StartCoroutine(GatheringCoroutine());
+                StateMachine.StartCoroutine(_interactable.BuildProgress());
             }
         }
 
         public override void ExitState()
         {
-            if (_gatheringCoroutine != null)
-            {
-                StateMachine.StopCoroutine(_gatheringCoroutine);
-            }
+            if (_gatheringCoroutine != null) StateMachine.StopCoroutine(_gatheringCoroutine);
         }
 
         private IEnumerator GatheringCoroutine()

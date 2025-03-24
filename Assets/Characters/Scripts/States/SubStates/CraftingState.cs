@@ -33,10 +33,7 @@ namespace Characters.Scripts
 
         public override void ExitState()
         {
-            if (_craftingCoroutine != null)
-            {
-                StateMachine.StopCoroutine(_craftingCoroutine);
-            }
+            if (_craftingCoroutine != null) StateMachine.StopCoroutine(_craftingCoroutine);
         }
 
         private IEnumerator CraftingCoroutine()
