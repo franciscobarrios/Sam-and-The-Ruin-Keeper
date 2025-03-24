@@ -17,6 +17,7 @@ public class PlayerISOController : MonoBehaviour
     [SerializeField] private LayerMask clickableLayer;
     [SerializeField] private LayerMask interactableLayer;
     [SerializeField] private float interactionRange = 2f;
+    [SerializeField] private GameObject tool;
 
     private GameInputSystemActions _inputActions;
     private CharacterStateMachine _stateMachine;
@@ -88,14 +89,14 @@ public class PlayerISOController : MonoBehaviour
     {
         var nearbyObjects = Physics.OverlapSphere(transform.position, interactionRange, interactableLayer);
         InteractableObject closestInteractable = null;
-        float closestDistance = Mathf.Infinity;
+        var closestDistance = Mathf.Infinity;
 
         foreach (var obj in nearbyObjects)
         {
             var interactable = obj.GetComponent<InteractableObject>();
             if (interactable != null)
             {
-                float distance = Vector3.Distance(transform.position, obj.transform.position);
+                var distance = Vector3.Distance(transform.position, obj.transform.position);
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
