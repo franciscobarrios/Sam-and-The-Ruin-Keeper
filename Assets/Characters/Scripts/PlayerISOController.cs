@@ -1,10 +1,3 @@
-using System.Collections;
-using System.Linq;
-using Characters.Scripts;
-using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.InputSystem;
-using System.Collections;
 using System.Linq;
 using Characters.Scripts;
 using UnityEngine;
@@ -19,21 +12,35 @@ public class PlayerISOController : MonoBehaviour
     [SerializeField] private float interactionRange = 2f;
     [SerializeField] private GameObject tool;
 
+    public Transform[] portals;
+
     private GameInputSystemActions _inputActions;
     private CharacterStateMachine _stateMachine;
-    public Transform[] portals;
     private InteractableObject _currentInteractable;
-
+    
+    private InventoryUI inventoryUI;
+    
     private void Awake()
     {
         _stateMachine = GetComponent<CharacterStateMachine>();
         _inputActions = new GameInputSystemActions();
         _inputActions.Player.Move.performed += OnClick;
         _inputActions.Player.Interact.performed += OnInteract;
+        _inputActions.Player.Inventory.performed += OnToggleInventory;
 
         portals = GameObject.FindGameObjectsWithTag("Portal")
             .Select(p => p.transform)
             .ToArray();
+    }
+
+    private void Start()
+    {
+        inventoryUI = FindAnyObjectByType<InventoryUI>();
+
+        if (inventoryUI == null)
+        {
+            Debug.LogError("InventoryUI not found in the scene!");
+        }
     }
 
     private void Update()
@@ -47,6 +54,18 @@ public class PlayerISOController : MonoBehaviour
                 clickableLayer))
         {
             _stateMachine.MoveTo(hit.point);
+        }
+    }
+
+    private void OnToggleInventory(InputAction.CallbackContext ctx)
+    {
+        if (inventoryUI != null)
+        {
+            inventoryUI.ToggleInventory();
+        }
+        else
+        {
+            Debug.LogWarning("InventoryUI not found!");
         }
     }
 

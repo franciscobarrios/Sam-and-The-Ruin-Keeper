@@ -1,16 +1,31 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InventoryUI : MonoBehaviour
 {
-    public Inventory inventory;
-    public Transform itemsParent;
-    public GameObject inventorySlotPrefab;
+    [SerializeField] private GameObject player;
+    [SerializeField] private Transform itemsParent;
+    [SerializeField] private GameObject inventorySlotPrefab;
+    [SerializeField] private GameObject inventoryCanvas;
+    [SerializeField] private GameObject darkerBackground;
+
+    private Inventory inventory;
 
     void Start()
     {
-        inventory = GameObject.FindGameObjectWithTag("Player").GetComponent<Inventory>();
+        inventory = player.GetComponent<Inventory>();
         UpdateUI();
+    }
+
+    public void ToggleInventory()
+    {
+        inventoryCanvas.SetActive(!inventoryCanvas.activeSelf);
+        darkerBackground.SetActive(!darkerBackground.activeSelf);
+        if (inventoryCanvas.activeSelf)
+        {
+            UpdateUI(); // Update UI when showing inventory
+        }
     }
 
     public void UpdateUI()
@@ -22,9 +37,9 @@ public class InventoryUI : MonoBehaviour
         }
 
         // Create new slots for each item.
-        foreach (Item item in inventory.items)
+        foreach (var item in inventory.items)
         {
-            GameObject slot = Instantiate(inventorySlotPrefab, itemsParent);
+            var slot = Instantiate(inventorySlotPrefab, itemsParent);
             slot.GetComponent<Image>().sprite = item.itemIcon;
             // Add text for item name, description, etc.
         }
