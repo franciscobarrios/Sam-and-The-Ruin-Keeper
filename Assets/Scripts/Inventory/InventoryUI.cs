@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,12 +17,14 @@ public class InventoryUI : MonoBehaviour
     {
         inventory = player.GetComponent<Inventory>();
         UpdateUI();
+        ShowInventory();
     }
 
-    public void ToggleInventory()
+    public void ShowInventory()
     {
         inventoryCanvas.SetActive(!inventoryCanvas.activeSelf);
         darkerBackground.SetActive(!darkerBackground.activeSelf);
+
         if (inventoryCanvas.activeSelf)
         {
             UpdateUI(); // Update UI when showing inventory
@@ -33,7 +36,9 @@ public class InventoryUI : MonoBehaviour
         // Clear existing slots.
         foreach (Transform child in itemsParent)
         {
-            Destroy(child.gameObject);
+            Debug.Log(child.gameObject.name);
+            
+            //Destroy(child.gameObject);
         }
 
         // Create new slots for each item.

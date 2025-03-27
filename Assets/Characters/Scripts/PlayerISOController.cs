@@ -17,9 +17,9 @@ public class PlayerISOController : MonoBehaviour
     private GameInputSystemActions _inputActions;
     private CharacterStateMachine _stateMachine;
     private InteractableObject _currentInteractable;
-    
+
     private InventoryUI inventoryUI;
-    
+
     private void Awake()
     {
         _stateMachine = GetComponent<CharacterStateMachine>();
@@ -31,16 +31,8 @@ public class PlayerISOController : MonoBehaviour
         portals = GameObject.FindGameObjectsWithTag("Portal")
             .Select(p => p.transform)
             .ToArray();
-    }
 
-    private void Start()
-    {
         inventoryUI = FindAnyObjectByType<InventoryUI>();
-
-        if (inventoryUI == null)
-        {
-            Debug.LogError("InventoryUI not found in the scene!");
-        }
     }
 
     private void Update()
@@ -61,7 +53,7 @@ public class PlayerISOController : MonoBehaviour
     {
         if (inventoryUI != null)
         {
-            inventoryUI.ToggleInventory();
+            inventoryUI.ShowInventory();
         }
         else
         {
