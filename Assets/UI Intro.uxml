@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/USS/IntroStyle.uss?fileID=7433441132597879392&amp;guid=89c2aa8393abf4ba4b81fc6b4395cf02&amp;type=3#IntroStyle" />
+    <ui:VisualElement name="VisualElement" style="flex-grow: 1; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.33); -unity-text-align: upper-left; justify-content: flex-end; align-items: flex-end; background-image: none;">
+        <ui:VisualElement name="VisualElement" style="flex-grow: 1; width: 100%; height: 50%; justify-content: center; align-items: flex-end; padding-top: 20px; padding-right: 20px; padding-bottom: 20px; padding-left: 20px;">
+            <ui:Label text="Sam &amp; The Keeper Of Ruin" name="GameNameLbl" style="background-color: rgba(0, 0, 0, 0); font-size: 62px; color: rgb(171, 171, 171); -unity-text-align: middle-center; -unity-font-style: bold; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; margin-top: 0; margin-right: 0; margin-left: 0; width: 100%; height: 30%; margin-bottom: 0;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1; width: 40%; height: 50%; align-items: flex-start;">
+            <ui:Button text="NEW GAME" name="NewGameBtn" class="button-intro" />
+            <ui:Button text="CONTINUE" name="ContinueGameBtn" class="button-intro" />
+            <ui:Button text="EXIT" name="ExitGameBtn" class="button-intro" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -30,11 +30,7 @@ public class InventoryManager : MonoBehaviour
             Instance = this;
         else
             Destroy(gameObject);
-
-        // Initialize with some starting materials (for testing)
-        AddMaterial("Wood", 10);
-        AddMaterial("Stone", 15);
-
+        
         // Ensure UI starts correctly
         UpdateMaterialUI();
     }
